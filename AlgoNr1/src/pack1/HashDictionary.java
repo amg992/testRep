@@ -11,12 +11,14 @@ public class HashDictionary<K extends Comparable<? super K>,V> implements Dictio
 	int elements = 0;
 	int m;
 	LinkedList<Entry<K,V>>[] alist;
+	int alength;
 	
 	public HashDictionary(int i) {
 		alist = new LinkedList[i];
 		for(int h = 0;h < alist.length; h++) {
 			alist[h]=new LinkedList<Entry<K,V>>();
 		}
+		alength = i;
 		m = i;
 	}
 	
@@ -28,7 +30,7 @@ public class HashDictionary<K extends Comparable<? super K>,V> implements Dictio
 		}
 		adr = adr % m;
 		int h = searchKey(key);
-		if (elements / alist.length > 1) {
+		if (elements / alength > 1) {
 			ensureCapacity(2*m);
 		}
 		if(h > -1) {
@@ -40,7 +42,7 @@ public class HashDictionary<K extends Comparable<? super K>,V> implements Dictio
 				}
 			}
 		} else {
-			alist[adr].addLast(new Entry<K,V>(key,value));
+			alist[adr].add(new Entry<K,V>(key,value));
 			elements++;
 			return null;
 		}
@@ -88,43 +90,60 @@ public class HashDictionary<K extends Comparable<? super K>,V> implements Dictio
 	public Iterator<Entry<K, V>> iterator() {
 		return new Iterator<Entry<K,V>>() {
 			int current = 0;
-			int all = alist.length;
-			int i = 0;
-			int elz = 0;
-			int el = 0;
+			int ged = 0;
+			int index = 0;
+			int f = 0;
+			int g = 0;
 
 			@Override
 			public boolean hasNext() {
-				if (alist[current].get(el).getKey() != null) {
-					el++;
-					return true;
-				}
-				el = 0;
-				current++;
-				while(current < all) {
-					if (alist[current].get(el).getKey() != null) {
-						el++;
-						return true;
+				for(int i = 0; i<alist.length;i++) {
+				for (Entry<K,V> entry : alist[i]) {
+					g = 1;
 					}
 				}
+				if(g == 0) {
+					return false;
+				}
+				while(alist[current].size() == 0) {
+					current++;
+				}
+				int i = 0;
+				for(Entry<K,V> list : alist[current]) {
+						if(list.getKey() != null && index < alist[current].size()) {
+							f=0;
+							return true;
+					} else if (index == alist[current].size()) {
+						current++;
+						while(current < alist.length && alist[current].size() == 0) {
+							current++;
+						}
+						index=0;
+						f = 0;
+						if(current > alist.length-1) {
+							return false;
+						}
+						return true;
+					} else {
+						index++;
+					}
+			}
 				return false;
 			}
 			@Override
 			public Entry<K,V> next() {
-				elz = alist[current].size();
-				if (el <= elz) {
-					return alist[current].get(el++);
+				for(Entry<K,V> e : alist[current]) {
+					if (e.getKey() != null && f == index) {
+						index++;
+						return e;
+					}
+					f++;
 				}
-				el = 0;
-				return alist[++current].get(el);
+				return null;
 			}
-			
 		};
 	}
 	private void ensureCapacity(int nc) {
-		if(nc < size()) {
-			return;
-		}
 		while(isPrime(nc) != true) {
 			nc++;
 			isPrime(nc);
@@ -132,8 +151,10 @@ public class HashDictionary<K extends Comparable<? super K>,V> implements Dictio
 		LinkedList<Entry<K, V>>[] old = alist;
 		m = nc;
 		alist = new LinkedList[nc];
+		elements = 0;
+		alength = nc;
 		for(int h = 0;h < alist.length; h++) {
-			alist[h]=new LinkedList<Entry<K,V>>();
+			alist[h]=new LinkedList<>();
 		}
 		for (LinkedList<Entry<K, V>> entry : old) {
 			for (Entry<K,V> entry2 : entry) {
@@ -152,7 +173,7 @@ public class HashDictionary<K extends Comparable<? super K>,V> implements Dictio
 		}
 		int i = 5;
 		while(i*i <= nc) {
-			if (nc % i == 0 || nc % (i+2)==0){
+			if (nc % i == 0){
 				return false;
 			}
 			i = i + 6;

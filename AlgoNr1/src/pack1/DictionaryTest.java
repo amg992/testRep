@@ -24,8 +24,8 @@ public class DictionaryTest {
 	 */
 	public static void main(String[] args)  throws FileNotFoundException{
 		
-		testSortedArrayDictionary();
-		testPerformanceSortedArray();
+//		testSortedArrayDictionary();
+//		testPerformanceSortedArray();
 		testHashDictionary();
 //		testBinaryTreeDictionary();
 	}

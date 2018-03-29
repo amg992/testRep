@@ -20,6 +20,7 @@ public class TUI {
 		System.out.println("r <deutsch>             | Löscht den Eintrag.");
 		System.out.println("exit                    | Beendet das Programm.");
 		System.out.println("help                    | Text wird erneut angezeigt.");
+		System.out.println("b <8> oder b <16>       | Benchmarking mit 8k oder 16k Befehlen.");
 		
 		
 		while(scan.hasNext()) {
@@ -59,8 +60,13 @@ public class TUI {
 			
 			case "s":
 			if(command.length == 1) {
-				System.out.println("Kein Wort oder nicht vorhanden");
+				System.out.println("Wort vergessen!");
+				break;
 			} else {
+				if(data.search(command[1]) == null) {
+					System.out.println("Wort nicht vorhanden!");
+					break;
+				}
 				String h = command[1];
 				System.out.println(data.search(h));
 			}
@@ -81,6 +87,22 @@ public class TUI {
 			case "exit":
 			System.exit(0);
 			break;
+			case "b":
+				JFileChooser dat2 = new JFileChooser();
+				int op = dat2.showOpenDialog(null);
+				if (op == JFileChooser.APPROVE_OPTION) {
+					String s = dat2.getSelectedFile().getAbsolutePath();
+				if (command.length == 1) {
+					benchMark(data,s,8000);
+				} else {
+					if(command[1].equals("8k")) {
+						benchMark(data,s,8000);
+					} else {
+						benchMark(data,s,16000);
+					}
+				}
+				}
+				break;
 			case "help":
 			System.out.println("create <Implementation> | Legt ein Dictionary an.");
 			System.out.println("read [n] Dateiname>     | Liest die ersten n Einträg der Datei in das Dictionary ein.");
@@ -90,6 +112,7 @@ public class TUI {
 			System.out.println("r <deutsch>             | Löscht den Eintrag.");
 			System.out.println("exit                    | Beendet das Programm.");
 			System.out.println("help                    | Text wird erneut angezeigt.");
+			System.out.println("b <8> oder b <16>       | Benchmarking mit 8k oder 16k Befehlen.");
 			}
 		}
 	}
@@ -116,5 +139,24 @@ public class TUI {
 			d.insert(key, value);
 			o++;
 		}
+	}
+	
+	private static void benchMark(Dictionary d, String path, int n) throws FileNotFoundException {
+		File fe = new File(path);
+		FileReader fre = new FileReader(fe);
+		Scanner scannere = new Scanner(fre);
+		int o = 0;
+		long startTime = System.currentTimeMillis();
+		while (scannere.hasNext() && o <= n) {
+			String[] tokens1 = scannere.nextLine().split(" ");
+			String key = tokens1[0];
+			String value = tokens1[1];
+			d.insert(key, value);
+			o++;
+		}
+		long endTime = System.currentTimeMillis();
+		long time = endTime-startTime;
+		System.out.println("Millisekunden: " + time);
+		
 	}
 }
