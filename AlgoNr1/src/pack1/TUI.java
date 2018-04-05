@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
-
+import static java.lang.System.nanoTime;
 public class TUI {	
 	public static void main(String[] args) throws FileNotFoundException {
 		Scanner scan = new Scanner(System.in);
@@ -45,9 +45,13 @@ public class TUI {
 				String s = dat.getSelectedFile().getAbsolutePath();
 				if (command.length == 1) {
 				insert(data, s);
-				} else {
+				} else if (command.length == 2){
 					int anzahl = Integer.parseInt(command[1]);
 					insert(data, s, anzahl);
+				} else {
+					int anzahl = Integer.parseInt(command[1]);
+					String wort = command[2];
+					
 				}
 			}
 			break;
@@ -63,12 +67,20 @@ public class TUI {
 				System.out.println("Wort vergessen!");
 				break;
 			} else {
+				long startoTime = nanoTime();
 				if(data.search(command[1]) == null) {
+					long endTime = nanoTime();
+					long time = endTime-startoTime;
 					System.out.println("Wort nicht vorhanden!");
+					System.out.println("Suche in Nanosekunden: "+time);
 					break;
 				}
 				String h = command[1];
+				long startTime = nanoTime();
 				System.out.println(data.search(h));
+				long endTime = nanoTime();
+				long time = endTime-startTime;
+				System.out.println("Suche in Nanosekunden: "+time);
 			}
 			break;
 			
@@ -156,7 +168,7 @@ public class TUI {
 		}
 		long endTime = System.currentTimeMillis();
 		long time = endTime-startTime;
-		System.out.println("Millisekunden: " + time);
+		System.out.println("Einfügen in Millisekunden: " + time);
 		
 	}
 }
