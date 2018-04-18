@@ -3,6 +3,8 @@ package pack1;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
@@ -12,6 +14,7 @@ public class TUI {
 		Scanner scan = new Scanner(System.in);
 		Dictionary<String, String> data = null;
 		String[] command = {};
+		
 		System.out.println("create <Implementation> | Legt ein Dictionary an.");
 		System.out.println("read [n] Dateiname>     | Liest die ersten n Einträg der Datei in das Dictionary ein.");
 		System.out.println("p                       | Gibt alle Einträge des Dictionary in der Konsole aus.");
@@ -30,9 +33,12 @@ public class TUI {
 			if (command.length == 1 || command[1].equals("SortedArrayDictionary")) {
 				data = new SortedArrayDictionary<>();
 				System.out.println("SortedArrayDictionary angelegt.");
-			} else if (command[1].equals("HashDictionary")) {
+			} else if (command[1].equals("HashDictionary") || command[1].equals("h")) {
 				data = new HashDictionary<>(3);
 				System.out.println("HashDictionary angelegt.");
+			} else if(command[1].equals("BinaryTreeDictionary") || command[1].equals("b")) {
+				data = new BinaryTreeDictionary<>();
+				System.out.println("BinaryTreeDictionary angelegt.");
 			} else {
 				System.out.println("Keine gültige Eingabe!");
 			}
@@ -86,7 +92,11 @@ public class TUI {
 			
 			case "i":
 				if (command.length == 3) {
+				long startTime = nanoTime();
 				data.insert(command[1], command[2]);
+				long endTime = System.nanoTime();
+				long time = endTime-startTime;
+				System.out.println("Einfügen in Millisekunden?: " + time);
 				}
 			break;
 			
@@ -107,7 +117,7 @@ public class TUI {
 				if (command.length == 1) {
 					benchMark(data,s,8000);
 				} else {
-					if(command[1].equals("8k")) {
+					if(command[1].equals("8")) {
 						benchMark(data,s,8000);
 					} else {
 						benchMark(data,s,16000);
@@ -159,13 +169,31 @@ public class TUI {
 		Scanner scannere = new Scanner(fre);
 		int o = 0;
 		long startTime = System.currentTimeMillis();
+		List<String> listes = new LinkedList<>();
+		List<String> listes2 = new LinkedList<>();
 		while (scannere.hasNext() && o <= n) {
 			String[] tokens1 = scannere.nextLine().split(" ");
 			String key = tokens1[0];
 			String value = tokens1[1];
 			d.insert(key, value);
+			listes.add(key);
+			listes2.add(value);
 			o++;
 		}
+		long startTime2 = System.currentTimeMillis();
+		for (String x : listes) {
+			d.search(x);
+		}
+		long endTime2 = System.currentTimeMillis();
+		long time2 = endTime2-startTime2;
+		System.out.println("Erfolgreiche Suche in Millisekunden: " + time2);
+		long startTime3 = System.currentTimeMillis();
+		for (String x : listes2) {
+			d.search(x);
+		}
+		long endTime3 = System.currentTimeMillis();
+		long time3 = endTime2-startTime2;
+		System.out.println("Nicht erfolgreiche Suche in Millisekunden: " + time3);
 		long endTime = System.currentTimeMillis();
 		long time = endTime-startTime;
 		System.out.println("Einfügen in Millisekunden: " + time);
